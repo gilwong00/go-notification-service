@@ -4,6 +4,7 @@ package rpc;
 
 option go_package = "rpc/notifications";
 
+// TODO maybe use connect-go instead of grpc-go
 message NotificationEvent {
   string message = 1;
   string follower_url = 2;
