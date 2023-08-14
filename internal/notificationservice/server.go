@@ -2,7 +2,7 @@ package notificationservice
 
 import (
 	db "github.com/gilwong00/go-notification-service/db/sqlc"
-	rpcs "github.com/gilwong00/go-notification-service/rpc"
+	"github.com/gilwong00/go-notification-service/rpcs"
 )
 
 type NotificationService struct {

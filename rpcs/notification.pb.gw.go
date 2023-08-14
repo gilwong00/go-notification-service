@@ -79,7 +79,7 @@ func RegisterNotificationServiceHandlerServer(ctx context.Context, mux *runtime.
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/rpc.NotificationService/EnqueueNotification", runtime.WithHTTPPathPattern("/api/v1/notification"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/rpcs.NotificationService/EnqueueNotification", runtime.WithHTTPPathPattern("/api/v1/notification"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -143,7 +143,7 @@ func RegisterNotificationServiceHandlerClient(ctx context.Context, mux *runtime.
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/rpc.NotificationService/EnqueueNotification", runtime.WithHTTPPathPattern("/api/v1/notification"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/rpcs.NotificationService/EnqueueNotification", runtime.WithHTTPPathPattern("/api/v1/notification"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	NotificationService_EnqueueNotification_FullMethodName = "/rpc.NotificationService/EnqueueNotification"
-	NotificationService_StreamNotification_FullMethodName  = "/rpc.NotificationService/StreamNotification"
+	NotificationService_EnqueueNotification_FullMethodName = "/rpcs.NotificationService/EnqueueNotification"
+	NotificationService_StreamNotifications_FullMethodName = "/rpcs.NotificationService/StreamNotifications"
 )
 
 // NotificationServiceClient is the client API for NotificationService service.
@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
 	EnqueueNotification(ctx context.Context, in *EnqueueNotificationRequest, opts ...grpc.CallOption) (*EnqueueNotificationResponse, error)
-	StreamNotification(ctx context.Context, in *StreamNotificationRequest, opts ...grpc.CallOption) (*StreamNotificationResponse, error)
+	StreamNotifications(ctx context.Context, in *StreamNotificationsRequest, opts ...grpc.CallOption) (*StreamNotificationsResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -48,9 +48,9 @@ func (c *notificationServiceClient) EnqueueNotification(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *notificationServiceClient) StreamNotification(ctx context.Context, in *StreamNotificationRequest, opts ...grpc.CallOption) (*StreamNotificationResponse, error) {
-	out := new(StreamNotificationResponse)
-	err := c.cc.Invoke(ctx, NotificationService_StreamNotification_FullMethodName, in, out, opts...)
+func (c *notificationServiceClient) StreamNotifications(ctx context.Context, in *StreamNotificationsRequest, opts ...grpc.CallOption) (*StreamNotificationsResponse, error) {
+	out := new(StreamNotificationsResponse)
+	err := c.cc.Invoke(ctx, NotificationService_StreamNotifications_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *notificationServiceClient) StreamNotification(ctx context.Context, in *
 // for forward compatibility
 type NotificationServiceServer interface {
 	EnqueueNotification(context.Context, *EnqueueNotificationRequest) (*EnqueueNotificationResponse, error)
-	StreamNotification(context.Context, *StreamNotificationRequest) (*StreamNotificationResponse, error)
+	StreamNotifications(context.Context, *StreamNotificationsRequest) (*StreamNotificationsResponse, error)
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -73,8 +73,8 @@ type UnimplementedNotificationServiceServer struct {
 func (UnimplementedNotificationServiceServer) EnqueueNotification(context.Context, *EnqueueNotificationRequest) (*EnqueueNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnqueueNotification not implemented")
 }
-func (UnimplementedNotificationServiceServer) StreamNotification(context.Context, *StreamNotificationRequest) (*StreamNotificationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StreamNotification not implemented")
+func (UnimplementedNotificationServiceServer) StreamNotifications(context.Context, *StreamNotificationsRequest) (*StreamNotificationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StreamNotifications not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
 
@@ -107,20 +107,20 @@ func _NotificationService_EnqueueNotification_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NotificationService_StreamNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StreamNotificationRequest)
+func _NotificationService_StreamNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StreamNotificationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NotificationServiceServer).StreamNotification(ctx, in)
+		return srv.(NotificationServiceServer).StreamNotifications(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: NotificationService_StreamNotification_FullMethodName,
+		FullMethod: NotificationService_StreamNotifications_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NotificationServiceServer).StreamNotification(ctx, req.(*StreamNotificationRequest))
+		return srv.(NotificationServiceServer).StreamNotifications(ctx, req.(*StreamNotificationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -129,7 +129,7 @@ func _NotificationService_StreamNotification_Handler(srv interface{}, ctx contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var NotificationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "rpc.NotificationService",
+	ServiceName: "rpcs.NotificationService",
 	HandlerType: (*NotificationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -137,8 +137,8 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _NotificationService_EnqueueNotification_Handler,
 		},
 		{
-			MethodName: "StreamNotification",
-			Handler:    _NotificationService_StreamNotification_Handler,
+			MethodName: "StreamNotifications",
+			Handler:    _NotificationService_StreamNotifications_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

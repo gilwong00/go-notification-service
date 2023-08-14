@@ -18,14 +18,17 @@ migratedownlast:
 sqlc:
 	sqlc generate
 
-# proto:
-# 	protoc --proto_path=proto proto/*.proto  --go_out=. --go-grpc_out=.
+start:
+	go run cmd/main.go
+
+evans:
+	evans --host localhost --port 6000 -r repl
 
 proto:
-	rm -f rpc/*.go
-	protoc --proto_path=proto --go_out=rpc --go_opt=paths=source_relative \
-	--go-grpc_out=rpc --go-grpc_opt=paths=source_relative \
-	--grpc-gateway_out=rpc  --grpc-gateway_opt paths=source_relative \
+	rm -f rpcs/*.go
+	protoc --proto_path=proto --go_out=rpcs --go_opt=paths=source_relative \
+	--go-grpc_out=rpcs --go-grpc_opt=paths=source_relative \
+	--grpc-gateway_out=rpcs  --grpc-gateway_opt paths=source_relative \
 	proto/*.proto
 
-.PHONY: migration migrateup migratedown migrateuplatest migratedownlast sqlc proto
+.PHONY: migration migrateup migratedown migrateuplatest migratedownlast sqlc proto start evans

@@ -10,7 +10,8 @@ import (
 	db "github.com/gilwong00/go-notification-service/db/sqlc"
 	"github.com/gilwong00/go-notification-service/internal/notificationservice"
 	config "github.com/gilwong00/go-notification-service/pkg"
-	rpcs "github.com/gilwong00/go-notification-service/rpc"
+	"github.com/gilwong00/go-notification-service/rpcs"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
