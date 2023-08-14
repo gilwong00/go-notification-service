@@ -1,11 +1,35 @@
 syntax = "proto3";
+import "google/api/annotations.proto";
 
 package rpc;
 
-option go_package = "rpc/notifications";
+option go_package = "github.com/gilwong00/go-notification-service/rpcs";
 
 // TODO maybe use connect-go instead of grpc-go
+service NotificationService {
+	rpc EnqueueNotification(EnqueueNotificationRequest) returns (EnqueueNotificationResponse) {
+		option (google.api.http) = {
+			post: '/api/v1/notification'
+			body: '*'
+		};
+	}
+	rpc StreamNotification(StreamNotificationRequest) returns (StreamNotificationResponse);
+}
+
 message NotificationEvent {
   string message = 1;
   string follower_url = 2;
+}
+
+message EnqueueNotificationRequest {
+  string user_id = 1;
+  string message = 2;
+}
+
+message EnqueueNotificationResponse {}
+
+message StreamNotificationRequest {}
+
+message StreamNotificationResponse {
+	NotificationEvent event = 1;
 }
