@@ -1,13 +1,31 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
-package rpc;
+package rpcs;
 
 option go_package = "github.com/gilwong00/go-notification-service/rpcs";
+
+service UserService {
+	rpc CreateUser(CreateUserRequest) returns(CreateUserResponse) {
+		option (google.api.http) = {
+			post: '/api/v1/user'
+			body: '*'
+		};
+	};
+}
 
 message User {
 	string id = 1;
 	string username = 2;
 	google.protobuf.Timestamp created_at = 3;
+}
+
+message CreateUserRequest {
+	string username = 1;
+}
+
+message CreateUserResponse {
+	User user = 1;
 }

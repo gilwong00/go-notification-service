@@ -9,6 +9,7 @@ import (
 
 	db "github.com/gilwong00/go-notification-service/db/sqlc"
 	"github.com/gilwong00/go-notification-service/internal/notificationservice"
+	"github.com/gilwong00/go-notification-service/internal/userservice"
 	config "github.com/gilwong00/go-notification-service/pkg"
 	"github.com/gilwong00/go-notification-service/rpcs"
 
@@ -31,16 +32,19 @@ func main() {
 	}
 	store := db.NewStore(conn)
 	notificationService := notificationservice.NewNotificationService(store)
-	go startGrpcApiGateway(notificationService, config.HTTPServerAddress)
-	startNotificationService(notificationService, config.NotificationServiceAddress)
+	userService := userservice.NewUserService(store)
+	go startGrpcApiGateway(notificationService, userService, config.HTTPServerAddress)
+	startGrpcServices(notificationService, userService, config.GrpcServicesAddress)
 }
 
-func startNotificationService(
-	service *notificationservice.NotificationService,
+func startGrpcServices(
+	notificationService *notificationservice.NotificationService,
+	userService *userservice.UserService,
 	address string,
 ) {
 	server := grpc.NewServer()
-	rpcs.RegisterNotificationServiceServer(server, service)
+	rpcs.RegisterNotificationServiceServer(server, notificationService)
+	rpcs.RegisterUserServiceServer(server, userService)
 	reflection.Register(server)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
@@ -49,12 +53,13 @@ func startNotificationService(
 	log.Printf("starting notification service at %s:", listener.Addr().String())
 	err = server.Serve(listener)
 	if err != nil {
-		log.Fatal("Cannot start grpc server:", err)
+		log.Fatal("Cannot start notification service:", err)
 	}
 }
 
 func startGrpcApiGateway(
-	service *notificationservice.NotificationService,
+	notificationService *notificationservice.NotificationService,
+	userService *userservice.UserService,
 	address string,
 ) {
 	grpcMux := runtime.NewServeMux(
@@ -69,9 +74,13 @@ func startGrpcApiGateway(
 	)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	err := rpcs.RegisterNotificationServiceHandlerServer(ctx, grpcMux, service)
+	err := rpcs.RegisterNotificationServiceHandlerServer(ctx, grpcMux, notificationService)
 	if err != nil {
 		log.Fatal("cannot register notification service handler", err)
+	}
+	err = rpcs.RegisterUserServiceHandlerServer(ctx, grpcMux, userService)
+	if err != nil {
+		log.Fatal("cannot register user service handler", err)
 	}
 	mux := http.NewServeMux()
 	mux.Handle("/", grpcMux)

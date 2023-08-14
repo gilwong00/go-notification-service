@@ -1,10 +1,10 @@
 syntax = "proto3";
 
+import "google/api/annotations.proto";
+
 package rpcs;
 
 option go_package = "github.com/gilwong00/go-notification-service/rpcs";
-
-import "google/api/annotations.proto";
 
 // TODO maybe use connect-go instead of grpc-go
 service NotificationService {
