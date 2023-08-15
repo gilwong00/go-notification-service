@@ -58,8 +58,8 @@ func (ns NullState) Value() (driver.Value, error) {
 
 type Follower struct {
 	ID         uuid.UUID
-	UserID     string
-	FollowerID string
+	UserID     uuid.UUID
+	FollowerID uuid.UUID
 	CreatedAt  time.Time
 	DeletedAt  time.Time
 }
@@ -67,7 +67,7 @@ type Follower struct {
 type NotificationQueue struct {
 	ID         uuid.UUID
 	Message    string
-	FollowerID string
+	FollowerID uuid.UUID
 	CreatedAt  time.Time
 	StateID    string
 	Attempts   sql.NullInt32

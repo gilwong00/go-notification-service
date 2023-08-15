@@ -1,0 +1,1 @@
+ALTER TABLE notification_queue DROP CONSTRAINT IF EXISTS fk_notification_state;

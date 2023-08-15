@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CreateUser(ctx context.Context, username string) (User, error)
 	GetUsers(ctx context.Context) ([]User, error)
 }
 
