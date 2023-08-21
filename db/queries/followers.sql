@@ -5,7 +5,5 @@ INSERT INTO followers (
 ) VALUES (
 	$1,
 	$2
-)
--- need to add some conflict or unique check
-RETURNING *;
+) RETURNING *;
 

@@ -1,0 +1,1 @@
+ALTER TABLE followers ADD CONSTRAINT UNIQUE_FOLLOWER UNIQUE (user_id, follower_id)

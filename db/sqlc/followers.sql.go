@@ -18,8 +18,7 @@ INSERT INTO followers (
 ) VALUES (
 	$1,
 	$2
-)
-RETURNING id, user_id, follower_id, created_at, deleted_at
+) RETURNING id, user_id, follower_id, created_at, deleted_at
 `
 
 type CreateFollowerParams struct {
