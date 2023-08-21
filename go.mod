@@ -3,6 +3,7 @@ module github.com/gilwong00/go-notification-service
 go 1.20
 
 require (
+	github.com/gofrs/uuid/v5 v5.0.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.2
 	github.com/lib/pq v1.10.9

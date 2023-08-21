@@ -9,3 +9,16 @@ sql:
         out: "./db/sqlc"
         emit_empty_slices: true
         emit_interface: true
+        overrides:
+          - db_type: "uuid"
+            nullable: false
+            go_type:
+              import: "github.com/gofrs/uuid/v5"
+              package: "uuid"
+              type: "UUID"
+          - db_type: "uuid"
+            nullable: true
+            go_type:
+              import: "github.com/gofrs/uuid/v5"
+              package: "uuid"
+              type: "NullUUID"

@@ -1,0 +1,5 @@
+ALTER TABLE users ALTER COLUMN deleted_at DROP NOT NULL;
+
+ALTER TABLE followers ALTER COLUMN deleted_at DROP NOT NULL;
+
+ALTER TABLE notification_queue ALTER COLUMN updated_at DROP NOT NULL;

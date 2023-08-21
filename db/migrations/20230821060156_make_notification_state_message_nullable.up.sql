@@ -1,0 +1,1 @@
+ALTER TABLE notification_state ALTER COLUMN message DROP NOT NULL;

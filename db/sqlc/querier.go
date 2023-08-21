@@ -6,11 +6,18 @@ package db
 
 import (
 	"context"
+
+	uuid "github.com/gofrs/uuid/v5"
 )
 
 type Querier interface {
+	CreateNotificationEvent(ctx context.Context, arg CreateNotificationEventParams) (NotificationQueue, error)
+	CreateNotificationState(ctx context.Context, state State) (NotificationState, error)
 	CreateUser(ctx context.Context, username string) (User, error)
+	GetFollowersByUserID(ctx context.Context, id uuid.UUID) ([]GetFollowersByUserIDRow, error)
 	GetUsers(ctx context.Context) ([]User, error)
+	ListNotifications(ctx context.Context) ([]NotificationQueue, error)
+	UpdateNotificationStateByID(ctx context.Context, arg UpdateNotificationStateByIDParams) error
 }
 
 var _ Querier = (*Queries)(nil)

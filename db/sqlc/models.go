@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
+	uuid "github.com/gofrs/uuid/v5"
 )
 
 type State string
@@ -61,23 +61,23 @@ type Follower struct {
 	UserID     uuid.UUID
 	FollowerID uuid.UUID
 	CreatedAt  time.Time
-	DeletedAt  time.Time
+	DeletedAt  sql.NullTime
 }
 
 type NotificationQueue struct {
 	ID         uuid.UUID
 	Message    string
 	FollowerID uuid.UUID
-	CreatedAt  time.Time
-	StateID    string
+	StateID    uuid.UUID
 	Attempts   sql.NullInt32
-	UpdatedAt  time.Time
+	CreatedAt  time.Time
+	UpdatedAt  sql.NullTime
 }
 
 type NotificationState struct {
 	ID            uuid.UUID
 	State         State
-	Message       string
+	Message       sql.NullString
 	RequestedAtAt time.Time
 	CompletedAt   sql.NullTime
 }
@@ -86,5 +86,5 @@ type User struct {
 	ID        uuid.UUID
 	Username  string
 	CreatedAt time.Time
-	DeletedAt time.Time
+	DeletedAt sql.NullTime
 }
