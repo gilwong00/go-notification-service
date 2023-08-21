@@ -2,12 +2,12 @@ package userservice
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	db "github.com/gilwong00/go-notification-service/db/sqlc"
 	"github.com/gilwong00/go-notification-service/rpcs"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -17,7 +17,7 @@ func (s *UserService) CreateUser(
 ) (*rpcs.CreateUserResponse, error) {
 	// validate
 	if len(req.Username) == 0 {
-		return nil, fmt.Errorf("username is required: %v", codes.InvalidArgument)
+		return nil, status.Error(codes.InvalidArgument, "username is required: %v")
 	}
 	var pgUser db.User
 	if err := s.store.ExecTx(ctx, func(q *db.Queries) error {

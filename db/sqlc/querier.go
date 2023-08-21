@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CreateFollower(ctx context.Context, arg CreateFollowerParams) (Follower, error)
 	CreateNotificationEvent(ctx context.Context, arg CreateNotificationEventParams) (NotificationQueue, error)
 	CreateNotificationState(ctx context.Context, state State) (NotificationState, error)
 	CreateUser(ctx context.Context, username string) (User, error)

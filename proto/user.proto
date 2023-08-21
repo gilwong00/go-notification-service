@@ -14,6 +14,12 @@ service UserService {
 			body: '*'
 		};
 	};
+	rpc AddFollower(AddFollowerRequest) returns(AddFollowerResponse) {
+		option (google.api.http) = {
+			post: '/api/v1/user/follower'
+			body: '*'
+		};
+	};
 	rpc DeleteUser(DeleteUserRequest) returns(DeleteUserResponse) {
 		option (google.api.http) = {
 			delete: '/api/v1/user/{id}'
@@ -40,3 +46,10 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {}
+
+message AddFollowerRequest {
+	string user_id = 1;
+	string follower_id = 2;
+}
+
+message AddFollowerResponse {}
