@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	uuid "github.com/gofrs/uuid/v5"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -27,4 +29,15 @@ func (q *Queries) CreateUser(ctx context.Context, username string) (User, error)
 		&i.DeletedAt,
 	)
 	return i, err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+UPDATE users
+SET deleted_at = CURRENT_TIMESTAMP
+WHERE users.id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	return err
 }
