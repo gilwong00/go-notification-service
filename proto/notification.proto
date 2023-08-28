@@ -14,7 +14,7 @@ service NotificationService {
 			body: '*'
 		};
 	}
-	rpc StreamNotifications(StreamNotificationsRequest) returns (StreamNotificationsResponse);
+	rpc StreamNotifications(stream StreamNotificationsRequest) returns (stream StreamNotificationsResponse);
 }
 
 message NotificationEvent {

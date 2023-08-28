@@ -15,10 +15,12 @@ type Querier interface {
 	CreateNotificationEvent(ctx context.Context, arg CreateNotificationEventParams) (NotificationQueue, error)
 	CreateNotificationState(ctx context.Context, state State) (NotificationState, error)
 	CreateUser(ctx context.Context, username string) (User, error)
+	DeleteNotificationEvent(ctx context.Context, arg DeleteNotificationEventParams) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	GetFollowersByUserID(ctx context.Context, id uuid.UUID) ([]GetFollowersByUserIDRow, error)
 	GetUsers(ctx context.Context) ([]User, error)
 	ListSendableNotifications(ctx context.Context) ([]ListSendableNotificationsRow, error)
+	UpdateNotificationAttemptCount(ctx context.Context, arg UpdateNotificationAttemptCountParams) error
 	UpdateNotificationStateByID(ctx context.Context, arg UpdateNotificationStateByIDParams) error
 }
 

@@ -8,25 +8,34 @@ package db
 import (
 	"context"
 	"database/sql"
+
+	uuid "github.com/gofrs/uuid/v5"
 )
 
 const listSendableNotifications = `-- name: ListSendableNotifications :many
 SELECT
+	notification_queue.id,
 	notification_queue.message,
 	notification_queue.attempts,
+	notification_state.id AS notification_state_id,
 	users.url
 FROM notification_queue
-JOIN followers ON folowers.id = notification_queue.follower_id
-JOIN users ON users.id = folowers.follower_id
+JOIN followers ON followers.user_id = notification_queue.follower_id
+JOIN users ON users.id = followers.follower_id
 JOIN notification_state ON notification_state.id = notification_queue.state_id
-WHERE users.url IS NOT NULL AND notification_state.state != 'success'
+WHERE
+	users.url IS NOT NULL AND
+	notification_state.state != 'success' AND
+	notification_state.completed_at IS NULL
 ORDER BY notification_queue.created_at DESC
 `
 
 type ListSendableNotificationsRow struct {
-	Message  string
-	Attempts sql.NullInt32
-	Url      sql.NullString
+	ID                  uuid.UUID
+	Message             string
+	Attempts            sql.NullInt32
+	NotificationStateID uuid.UUID
+	Url                 sql.NullString
 }
 
 func (q *Queries) ListSendableNotifications(ctx context.Context) ([]ListSendableNotificationsRow, error) {
@@ -38,7 +47,13 @@ func (q *Queries) ListSendableNotifications(ctx context.Context) ([]ListSendable
 	items := []ListSendableNotificationsRow{}
 	for rows.Next() {
 		var i ListSendableNotificationsRow
-		if err := rows.Scan(&i.Message, &i.Attempts, &i.Url); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Message,
+			&i.Attempts,
+			&i.NotificationStateID,
+			&i.Url,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

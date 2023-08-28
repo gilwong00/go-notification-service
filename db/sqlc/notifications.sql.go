@@ -71,19 +71,64 @@ func (q *Queries) CreateNotificationState(ctx context.Context, state State) (Not
 	return i, err
 }
 
-const updateNotificationStateByID = `-- name: UpdateNotificationStateByID :exec
+const deleteNotificationEvent = `-- name: DeleteNotificationEvent :exec
 UPDATE notification_state
-SET state = $2, message = $3
+SET
+	state = $2,
+	message = $3,
+	completed_at = CURRENT_TIMESTAMP
 WHERE id = $1
 `
 
-type UpdateNotificationStateByIDParams struct {
+type DeleteNotificationEventParams struct {
 	ID      uuid.UUID
 	State   State
 	Message sql.NullString
 }
 
+func (q *Queries) DeleteNotificationEvent(ctx context.Context, arg DeleteNotificationEventParams) error {
+	_, err := q.db.ExecContext(ctx, deleteNotificationEvent, arg.ID, arg.State, arg.Message)
+	return err
+}
+
+const updateNotificationAttemptCount = `-- name: UpdateNotificationAttemptCount :exec
+UPDATE notification_queue
+SET attempts = $2, updated_at = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+type UpdateNotificationAttemptCountParams struct {
+	ID       uuid.UUID
+	Attempts sql.NullInt32
+}
+
+func (q *Queries) UpdateNotificationAttemptCount(ctx context.Context, arg UpdateNotificationAttemptCountParams) error {
+	_, err := q.db.ExecContext(ctx, updateNotificationAttemptCount, arg.ID, arg.Attempts)
+	return err
+}
+
+const updateNotificationStateByID = `-- name: UpdateNotificationStateByID :exec
+UPDATE notification_state
+SET
+	state = $2,
+	message = $3,
+	completed_at = $4
+WHERE id = $1
+`
+
+type UpdateNotificationStateByIDParams struct {
+	ID          uuid.UUID
+	State       State
+	Message     sql.NullString
+	CompletedAt sql.NullTime
+}
+
 func (q *Queries) UpdateNotificationStateByID(ctx context.Context, arg UpdateNotificationStateByIDParams) error {
-	_, err := q.db.ExecContext(ctx, updateNotificationStateByID, arg.ID, arg.State, arg.Message)
+	_, err := q.db.ExecContext(ctx, updateNotificationStateByID,
+		arg.ID,
+		arg.State,
+		arg.Message,
+		arg.CompletedAt,
+	)
 	return err
 }
