@@ -7,30 +7,38 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
-const listNotifications = `-- name: ListNotifications :many
-SELECT id, message, follower_id, state_id, attempts, created_at, updated_at FROM notification_queue
+const listSendableNotifications = `-- name: ListSendableNotifications :many
+SELECT
+	notification_queue.message,
+	notification_queue.attempts,
+	users.url
+FROM notification_queue
+JOIN followers ON folowers.id = notification_queue.follower_id
+JOIN users ON users.id = folowers.follower_id
+JOIN notification_state ON notification_state.id = notification_queue.state_id
+WHERE users.url IS NOT NULL AND notification_state.state != 'success'
+ORDER BY notification_queue.created_at DESC
 `
 
-func (q *Queries) ListNotifications(ctx context.Context) ([]NotificationQueue, error) {
-	rows, err := q.db.QueryContext(ctx, listNotifications)
+type ListSendableNotificationsRow struct {
+	Message  string
+	Attempts sql.NullInt32
+	Url      sql.NullString
+}
+
+func (q *Queries) ListSendableNotifications(ctx context.Context) ([]ListSendableNotificationsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSendableNotifications)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []NotificationQueue{}
+	items := []ListSendableNotificationsRow{}
 	for rows.Next() {
-		var i NotificationQueue
-		if err := rows.Scan(
-			&i.ID,
-			&i.Message,
-			&i.FollowerID,
-			&i.StateID,
-			&i.Attempts,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
+		var i ListSendableNotificationsRow
+		if err := rows.Scan(&i.Message, &i.Attempts, &i.Url); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

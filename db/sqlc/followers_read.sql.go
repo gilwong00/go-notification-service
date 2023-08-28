@@ -14,7 +14,7 @@ import (
 )
 
 const getFollowersByUserID = `-- name: GetFollowersByUserID :many
-SELECT users.id, username, users.created_at, users.deleted_at, followers.id, user_id, follower_id, followers.created_at, followers.deleted_at from users
+SELECT users.id, username, users.created_at, users.deleted_at, url, followers.id, user_id, follower_id, followers.created_at, followers.deleted_at from users
 JOIN followers on followers.user_id = users.id
 WHERE users.id = $1
 `
@@ -24,6 +24,7 @@ type GetFollowersByUserIDRow struct {
 	Username    string
 	CreatedAt   time.Time
 	DeletedAt   sql.NullTime
+	Url         sql.NullString
 	ID_2        uuid.UUID
 	UserID      uuid.UUID
 	FollowerID  uuid.UUID
@@ -45,6 +46,7 @@ func (q *Queries) GetFollowersByUserID(ctx context.Context, id uuid.UUID) ([]Get
 			&i.Username,
 			&i.CreatedAt,
 			&i.DeletedAt,
+			&i.Url,
 			&i.ID_2,
 			&i.UserID,
 			&i.FollowerID,

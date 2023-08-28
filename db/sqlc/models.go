@@ -87,4 +87,5 @@ type User struct {
 	Username  string
 	CreatedAt time.Time
 	DeletedAt sql.NullTime
+	Url       sql.NullString
 }

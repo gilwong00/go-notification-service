@@ -16,7 +16,7 @@ INSERT INTO users (
 	username
 ) VALUES (
 	$1
-) RETURNING id, username, created_at, deleted_at
+) RETURNING id, username, created_at, deleted_at, url
 `
 
 func (q *Queries) CreateUser(ctx context.Context, username string) (User, error) {
@@ -27,6 +27,7 @@ func (q *Queries) CreateUser(ctx context.Context, username string) (User, error)
 		&i.Username,
 		&i.CreatedAt,
 		&i.DeletedAt,
+		&i.Url,
 	)
 	return i, err
 }

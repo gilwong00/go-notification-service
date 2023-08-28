@@ -18,7 +18,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	GetFollowersByUserID(ctx context.Context, id uuid.UUID) ([]GetFollowersByUserIDRow, error)
 	GetUsers(ctx context.Context) ([]User, error)
-	ListNotifications(ctx context.Context) ([]NotificationQueue, error)
+	ListSendableNotifications(ctx context.Context) ([]ListSendableNotificationsRow, error)
 	UpdateNotificationStateByID(ctx context.Context, arg UpdateNotificationStateByIDParams) error
 }
 

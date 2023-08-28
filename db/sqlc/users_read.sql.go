@@ -10,7 +10,7 @@ import (
 )
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, username, created_at, deleted_at from users
+SELECT id, username, created_at, deleted_at, url from users
 `
 
 func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
@@ -27,6 +27,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 			&i.Username,
 			&i.CreatedAt,
 			&i.DeletedAt,
+			&i.Url,
 		); err != nil {
 			return nil, err
 		}
