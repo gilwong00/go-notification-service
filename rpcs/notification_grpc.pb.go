@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
 	EnqueueNotification(ctx context.Context, in *EnqueueNotificationRequest, opts ...grpc.CallOption) (*EnqueueNotificationResponse, error)
-	StreamNotifications(ctx context.Context, opts ...grpc.CallOption) (NotificationService_StreamNotificationsClient, error)
+	StreamNotifications(ctx context.Context, in *StreamNotificationsRequest, opts ...grpc.CallOption) (NotificationService_StreamNotificationsClient, error)
 }
 
 type notificationServiceClient struct {
@@ -48,27 +48,28 @@ func (c *notificationServiceClient) EnqueueNotification(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *notificationServiceClient) StreamNotifications(ctx context.Context, opts ...grpc.CallOption) (NotificationService_StreamNotificationsClient, error) {
+func (c *notificationServiceClient) StreamNotifications(ctx context.Context, in *StreamNotificationsRequest, opts ...grpc.CallOption) (NotificationService_StreamNotificationsClient, error) {
 	stream, err := c.cc.NewStream(ctx, &NotificationService_ServiceDesc.Streams[0], NotificationService_StreamNotifications_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
 	x := &notificationServiceStreamNotificationsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
 	return x, nil
 }
 
 type NotificationService_StreamNotificationsClient interface {
-	Send(*StreamNotificationsRequest) error
 	Recv() (*StreamNotificationsResponse, error)
 	grpc.ClientStream
 }
 
 type notificationServiceStreamNotificationsClient struct {
 	grpc.ClientStream
-}
-
-func (x *notificationServiceStreamNotificationsClient) Send(m *StreamNotificationsRequest) error {
-	return x.ClientStream.SendMsg(m)
 }
 
 func (x *notificationServiceStreamNotificationsClient) Recv() (*StreamNotificationsResponse, error) {
@@ -84,7 +85,7 @@ func (x *notificationServiceStreamNotificationsClient) Recv() (*StreamNotificati
 // for forward compatibility
 type NotificationServiceServer interface {
 	EnqueueNotification(context.Context, *EnqueueNotificationRequest) (*EnqueueNotificationResponse, error)
-	StreamNotifications(NotificationService_StreamNotificationsServer) error
+	StreamNotifications(*StreamNotificationsRequest, NotificationService_StreamNotificationsServer) error
 	mustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -95,7 +96,7 @@ type UnimplementedNotificationServiceServer struct {
 func (UnimplementedNotificationServiceServer) EnqueueNotification(context.Context, *EnqueueNotificationRequest) (*EnqueueNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnqueueNotification not implemented")
 }
-func (UnimplementedNotificationServiceServer) StreamNotifications(NotificationService_StreamNotificationsServer) error {
+func (UnimplementedNotificationServiceServer) StreamNotifications(*StreamNotificationsRequest, NotificationService_StreamNotificationsServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamNotifications not implemented")
 }
 func (UnimplementedNotificationServiceServer) mustEmbedUnimplementedNotificationServiceServer() {}
@@ -130,12 +131,15 @@ func _NotificationService_EnqueueNotification_Handler(srv interface{}, ctx conte
 }
 
 func _NotificationService_StreamNotifications_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(NotificationServiceServer).StreamNotifications(&notificationServiceStreamNotificationsServer{stream})
+	m := new(StreamNotificationsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(NotificationServiceServer).StreamNotifications(m, &notificationServiceStreamNotificationsServer{stream})
 }
 
 type NotificationService_StreamNotificationsServer interface {
 	Send(*StreamNotificationsResponse) error
-	Recv() (*StreamNotificationsRequest, error)
 	grpc.ServerStream
 }
 
@@ -145,14 +149,6 @@ type notificationServiceStreamNotificationsServer struct {
 
 func (x *notificationServiceStreamNotificationsServer) Send(m *StreamNotificationsResponse) error {
 	return x.ServerStream.SendMsg(m)
-}
-
-func (x *notificationServiceStreamNotificationsServer) Recv() (*StreamNotificationsRequest, error) {
-	m := new(StreamNotificationsRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
@@ -172,7 +168,6 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "StreamNotifications",
 			Handler:       _NotificationService_StreamNotifications_Handler,
 			ServerStreams: true,
-			ClientStreams: true,
 		},
 	},
 	Metadata: "notification.proto",

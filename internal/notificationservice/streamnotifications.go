@@ -14,6 +14,7 @@ import (
 const maxRetryAttempt int32 = 5
 
 func (s *NotificationService) StreamNotifications(
+	req *rpcs.StreamNotificationsRequest,
 	server rpcs.NotificationService_StreamNotificationsServer,
 ) error {
 	ctx := server.Context()
